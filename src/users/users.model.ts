@@ -60,8 +60,8 @@ export class CreateUserResponse {
   contact: string
   
   @ApiProperty({ example: "createdAt", description: "2022-09-23T13:58:43.701Z" })
-  createdAt: string
+  createdAt: Date
   
   @ApiProperty({ example: "updatedAt", description: "2022-09-23T13:58:43.701Z" })
-  updatedAt: string 
+  updatedAt: Date 
 }

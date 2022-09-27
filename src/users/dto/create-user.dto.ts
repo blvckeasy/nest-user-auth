@@ -36,6 +36,7 @@ export class CreateUserDto {
   @ApiProperty({ example: "mark32", required: true, description: "username", uniqueItems: true })
   @IsDefined()
   @IsNotEmpty()
+  @Matches(/^[a-z0-9_]+$/)
   @IsString()
   @Length(4, 40, {
     message: "username length is between 4 and 40"

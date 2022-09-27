@@ -1,13 +1,21 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config'
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from './users/users.model'
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { JwtModule } from '@nestjs/jwt'
-import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration'
+
+// modules
+import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
+import { AuthModule } from './auth/auth.module';
+import { ContactBanModule } from './ContactBan/contactBan.module';
+import { ContactAttempModule } from './contactAttemp/contactAttemp.module';
+
+// models
+import { User } from './users/users.model'
+import { ContactBan } from './ContactBan/contactBan.model'
+import { ContactAttemp } from './contactAttemp/contactAttemp.model'
 
 @Module({
   controllers: [],
@@ -25,19 +33,23 @@ import configuration from './config/configuration'
       username: process.env.POSTGRES_USER,
       password: String(process.env.POSTGRES_PASSWORD),
       database: process.env.POSTGRES_DB,
-      logging: true,
+      logging: false,
       models: [
-        User
+        User,
+        ContactBan,
+        ContactAttemp
       ],
       autoLoadModels: true
     }),
     MulterModule.register({ dest: './uploads' }),
     UsersModule,
+    ContactBanModule,
     RolesModule,
+    AuthModule,
+    ContactAttempModule,
     JwtModule.register({
       secret: process.env.SECRET_KEY
     }),
-    AuthModule
   ],
 })
 
