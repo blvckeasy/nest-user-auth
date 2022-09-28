@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config'
 import { SequelizeModule } from '@nestjs/sequelize';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { JwtModule } from '@nestjs/jwt'
+import { ScheduleModule } from '@nestjs/schedule'
+
+// import app configuration
 import configuration from './config/configuration'
 
 // modules
@@ -17,10 +20,12 @@ import { User } from './users/users.model'
 import { ContactBan } from './ContactBan/contactBan.model'
 import { ContactAttemp } from './contactAttemp/contactAttemp.model'
 
+
 @Module({
   controllers: [],
   providers: [],
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,
       isGlobal: true,

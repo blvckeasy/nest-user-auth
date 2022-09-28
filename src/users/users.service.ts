@@ -37,8 +37,14 @@ export class UsersService {
 
       const find_contact_ban = await this.contactBanService.getBanContact(contact)
       
+      console.log(find_contact_ban)
+
       if (find_contact) throw new HttpException(`${contact} contact already exists.`, HttpStatus.FOUND)
-      console.log('ban contact:', find_contact_ban)
+      if (find_contact_ban) throw new HttpException({
+        status: HttpStatus.FORBIDDEN,
+        message: `"${contact}" was saved until "${find_contact_ban.expire_date}"!`,
+        ban_expire_date: find_contact_ban.expire_date
+      }, HttpStatus.FORBIDDEN)
 
       if (!code) {
         // send sms to contact (OTP)

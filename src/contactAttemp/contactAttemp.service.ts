@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize'
 import { ContactBanService } from '../ContactBan/contactBan.service'
 import { ContactAttemp } from './contactAttemp.model'
+
 
 @Injectable()
 export class ContactAttempService {
@@ -12,23 +13,26 @@ export class ContactAttempService {
   ) {}
 
   async additionAttempCount(contact: string) {
-    const [attemp, created] = await this.attempRepasitory.findOrCreate({
+    const [ attemp ] = await this.attempRepasitory.findOrCreate({
       where: { contact },
       defaults: { contact, count: 0 }
     })
 
-    if (!created) {
-      if (attemp.count ) { // == 5
-        // update contact attemp count default 0
-        await this.defaultAttempCount(contact)
-        // ban for 5 minute
-        await this.contactBanService.banContact({ contact })
-        return "you are blocked"
+    // increment contact attemps
+    await this.attempRepasitory.increment("count", { where: { contact } })
+    
+    if (attemp.count >= 4) {
+      // update contact attemp count default 0
+      await this.defaultAttempCount(contact)
+      // ban for 5 minute
+      await this.contactBanService.banContact({ contact })
+
+      return {
+        status: 401,
+        ok: false
       }
-      
-      // increment contact attemps
-      await this.attempRepasitory.increment("count", { where: { contact } })
     }
+    
 
     return attemp
   }

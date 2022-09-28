@@ -14,7 +14,7 @@ export class ContactAttemp extends Model<ContactAttemp, ContactAttempCreationAtt
   @Column({ type: Sequelize.STRING, allowNull: false, primaryKey: true })
   contact: string
 
-  @Column({ type: Sequelize.SMALLINT, defaultValue: 1 })
+  @Column({ type: Sequelize.SMALLINT, defaultValue: 0 })
   count: number
 
 }

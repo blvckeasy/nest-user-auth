@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize'
+import { Cron, CronExpression } from '@nestjs/schedule'
+// import dto
 import { CreateContactBanDto } from './dto/create-contactBan.dto'
-
 // import models
 import { ContactBan } from './contactBan.model'
 import { Op } from 'sequelize'
@@ -13,6 +14,16 @@ export class ContactBanService {
     @InjectModel(ContactBan)
     private banRepository: typeof ContactBan
   ) {}
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  // the function of deleting those who have expired
+  deleteContactBanEveryMinute() {
+    this.banRepository.destroy({
+      where: { 
+        expire_date: { [Op.lte]: new Date() }
+      }
+    })
+  }
 
   async getAllBanContacts() {
     const contactsBanInfo = await this.banRepository.findAll()
@@ -57,7 +68,7 @@ export class ContactBanService {
     const { contact } = dto
     const [ban, created] = await this.banRepository.findOrCreate({ where: { contact } })
     if (!created) {
-      ban.expire_date = new Date(Date.now() + (5 * 60 * 1000))
+      ban.expire_date =  new Date(Date.now() + (5 * 60 * 1000))
     }
   }
 
