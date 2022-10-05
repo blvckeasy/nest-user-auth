@@ -45,8 +45,6 @@ export class AuthService {
 
     const res = await axios(fetchConfig)
 
-    console.log('res data: ', res.data)
-
     if ([-10001].includes(res.data.error?.code)) throw new InternalServerErrorException();
     if ([-10004].includes(res.data.error?.code)) throw new HttpException(res.data.error.message, HttpStatus.NOT_ACCEPTABLE)
 

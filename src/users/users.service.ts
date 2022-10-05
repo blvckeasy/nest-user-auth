@@ -36,8 +36,6 @@ export class UsersService {
       })
 
       const find_contact_ban = await this.contactBanService.getBanContact(contact)
-      
-      console.log(find_contact_ban)
 
       if (find_contact) throw new HttpException(`${contact} contact already exists.`, HttpStatus.FOUND)
       if (find_contact_ban) throw new HttpException({
@@ -64,12 +62,12 @@ export class UsersService {
       // After everything is completed successfully, return the number of attempts to the default value
       await this.attempService.defaultAttempCount(contact)
     }
-    
-    const user = await this.userRepository.create({
+    // create user
+    const user = (await Object(await this.userRepository.create({
       fullname, username, password, contact
-    })
-
-    delete user["password"]
+    }))).dataValues
+    
+    delete user.password
     return user
   }
 
