@@ -32,4 +32,8 @@ export default () => ({
       }
     }
   },
+  JWT: {
+    JWT_SECRET: "91c9c3ff310a53f8d179461d9af55371c78b67c38ab030bf9c026693ca495399",
+    JWT_EXPIRES_IN: "1d",
+  }
 });

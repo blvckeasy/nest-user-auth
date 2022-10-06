@@ -13,12 +13,14 @@ import { AuthService } from '../auth/auth.service'
 import { ContactAttempService } from '../contactAttemp/contactAttemp.service'
 import { ContactBan } from '../ContactBan/contactBan.model'
 import { ContactBanService } from '../ContactBan/contactBan.service'
+import { JwtModule } from '@nestjs/jwt'
 
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService, AuthService, ContactAttempService, ContactBanService],
   imports: [
+    JwtModule,
     SequelizeModule.forFeature([User, ContactAttemp, ContactBan], {
       define: {
         indexes: [{
@@ -26,6 +28,7 @@ import { ContactBanService } from '../ContactBan/contactBan.service'
         }]
       }
     })
-  ]
+  ],
+  exports: [UsersService]
 })
 export class UsersModule {}

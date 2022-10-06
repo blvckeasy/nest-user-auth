@@ -1,11 +1,15 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt'
 import axios from 'axios';
 
 @Injectable()
 export class AuthService {
   
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {}
 
   async sendSMSCode(contact: string): Promise<any> {
     if (contact.length < 9) {
@@ -49,5 +53,22 @@ export class AuthService {
     if ([-10004].includes(res.data.error?.code)) throw new HttpException(res.data.error.message, HttpStatus.NOT_ACCEPTABLE)
 
     return res;
+  }
+
+  async signToken(payloadDto: object) {
+    return {
+      accessToken: this.jwtService.sign(payloadDto, {
+        privateKey: await this.configService.get("JWT").JWT_SECRET,
+        expiresIn: await this.configService.get("JWT").JWT_EXPIRES_IN
+      })
+    }
+  }
+
+  async verifyToken(tokenDto) {
+    const { token } = tokenDto
+    return {
+      ok: true,
+      data: this.jwtService.verify(token)
+    }
   }
 }

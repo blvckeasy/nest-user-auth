@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Ip, Headers, } from '@nestjs/common';
 import { UsersService } from './users.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { CreateUserResponse, User } from './users.model'
+import { AuthService } from '../auth/auth.service'
 
 
 @ApiTags("Users")
@@ -11,13 +12,27 @@ export class UsersController {
   
   constructor(
     private userService: UsersService,
+    private authService: AuthService
   ) {}
 
   @ApiOperation({summary: "User creation"})
   @ApiResponse({status: 200, type: User})
-  @Post()
-  create(@Body() userDto: CreateUserDto) {
-    return this.userService.createUser(userDto)
+  @Post('register')
+  async create(
+    @Headers() headers: Headers, 
+    @Body() userDto: CreateUserDto,
+    @Ip() ip: string
+  ) {
+    const user = await this.userService.createUser(userDto)
+    user.headers = { 'user-agent': headers['user-agent'], ip }
+    const access_token = await this.authService.signToken(user)
+  
+    return {
+      user,
+      token: {
+        access_token
+      }
+    }
   }
 
   @ApiOperation({summary: "Get all users."})
@@ -28,7 +43,7 @@ export class UsersController {
   }
 
   @ApiResponse({status: 200, type: CreateUserResponse})
-  @Post('register')
+  @Post()
   registration(@Body() userDto: CreateUserDto) {
     return this.userService.createUser(userDto)
   }

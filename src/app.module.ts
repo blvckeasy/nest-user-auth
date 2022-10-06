@@ -52,9 +52,6 @@ import { ContactAttemp } from './contactAttemp/contactAttemp.model'
     RolesModule,
     AuthModule,
     ContactAttempModule,
-    JwtModule.register({
-      secret: process.env.SECRET_KEY
-    }),
   ],
 })
 

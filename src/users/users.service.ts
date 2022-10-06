@@ -71,6 +71,10 @@ export class UsersService {
     return user
   }
 
+  async login(token: string) {
+    console['log'](this.authService.verifyToken(token))
+  }
+
   async getAllUsers(user_id: number) {
     if (user_id) {
       const user = await this.userRepository.findOne({
@@ -87,7 +91,3 @@ export class UsersService {
   }
 
 }
-
-
-// INSERT INTO "users" ("id","fullname","username","password","type","contact","coin","createdAt","updatedAt") 
-// VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
