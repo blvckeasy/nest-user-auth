@@ -25,7 +25,6 @@ export class MatchConstraint implements ValidatorConstraintInterface {
 
 export class CreateUserDto {
   @ApiProperty({ example: "Mark Adult", required: false, description: "fullname" })
-  @IsAlphanumeric()
   @IsOptional()
   @IsString()
   @Length(4, 60, {

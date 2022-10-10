@@ -14,13 +14,28 @@ import { ContactAttempService } from '../contactAttemp/contactAttemp.service'
 import { ContactBan } from '../ContactBan/contactBan.model'
 import { ContactBanService } from '../ContactBan/contactBan.service'
 import { JwtModule } from '@nestjs/jwt'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { PassportModule } from '@nestjs/passport'
 
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService, AuthService, ContactAttempService, ContactBanService],
   imports: [
-    JwtModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const signOption = {
+          secret: configService.get("JWT").SECRET,
+          signOptions: {
+            expiresIn: configService.get("JWT").EXPIRES_IN,
+          }
+        }
+        return signOption
+      },
+      inject: [ConfigService]
+    }),
     SequelizeModule.forFeature([User, ContactAttemp, ContactBan], {
       define: {
         indexes: [{

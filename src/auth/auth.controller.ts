@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service'
 
 @Controller('auth')
@@ -16,6 +16,13 @@ export class AuthController {
 
   @Post('verifyToken')
   async veriftToken(@Body() tokenDto) {
-    return this.authService.verifyToken(tokenDto)
+    const { token } = tokenDto
+    return this.authService.verifyToken(token)
   }
+
+  @Post('check') 
+  async asdf(@Headers() headers, @Body() token){
+    await this.authService.tokenValidation(token, headers)
+  }
+
 }

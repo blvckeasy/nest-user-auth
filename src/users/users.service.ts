@@ -71,8 +71,15 @@ export class UsersService {
     return user
   }
 
-  async login(token: string) {
-    console['log'](this.authService.verifyToken(token))
+  
+
+  // async login(token: string) {
+  //   const { data: user } = await this.authService.verifyToken(token)
+  // }
+
+  async login(username: string) {
+    const user = await this.userRepository.findOne({ where: { username } })
+    return user
   }
 
   async getAllUsers(user_id: number) {
@@ -88,6 +95,13 @@ export class UsersService {
 
     const users = await this.userRepository.findAll()
     return users || []
+  }
+
+  async getUser(user_id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id }
+    })
+    return user || {}
   }
 
 }

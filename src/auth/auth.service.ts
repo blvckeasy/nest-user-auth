@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Headers } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt'
+import { JwtService, JwtSignOptions} from '@nestjs/jwt'
 import axios from 'axios';
+
 
 @Injectable()
 export class AuthService {
@@ -57,18 +58,44 @@ export class AuthService {
 
   async signToken(payloadDto: object) {
     return {
-      accessToken: this.jwtService.sign(payloadDto, {
-        privateKey: await this.configService.get("JWT").JWT_SECRET,
-        expiresIn: await this.configService.get("JWT").JWT_EXPIRES_IN
-      })
+      accessToken: this.jwtService.sign(payloadDto)
     }
   }
 
-  async verifyToken(tokenDto) {
-    const { token } = tokenDto
+  async verifyToken(token: string) {
+    try {
+      return {
+        ok: true,
+        data: await this.jwtService.verify(token) 
+      }
+    } catch (error) {
+      console.error(error)
+
+      throw new HttpException({
+        statusCode: HttpStatus.FORBIDDEN,
+        ok: false,
+        error: error.message,
+        data: {}
+      }, HttpStatus.FORBIDDEN)
+    }
+  }
+
+  /**
+    * pass token validations
+  */
+  async tokenValidation(token: string, headers: Headers) {
+    const tokenInfo = await this.verifyToken(token)
+    console.log('1');
+    if (tokenInfo.data?.headers["user-agent"] !== headers["user-agent"]) {
+      throw new HttpException({
+        statusCode: HttpStatus.FORBIDDEN,
+        ok: false,
+        message: "invalid token"
+      }, HttpStatus.FORBIDDEN)
+    }
     return {
+      statusCode: 201,
       ok: true,
-      data: this.jwtService.verify(token)
     }
   }
 }
